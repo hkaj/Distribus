@@ -4,7 +4,7 @@ from vehicle import Vehicle
 
 
 class Bus(Vehicle):
-    """Represent a bus."""
+    """Represents a bus."""
     def __init__(self, arg):
-        super(Vehicle, self).__init__()
+        super(Bus, self).__init__(arg)
         self.isBus = True

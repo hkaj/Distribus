@@ -4,7 +4,11 @@ import bus
 import car
 import vehicle
 
-vehicles = []
+#initialize our dynamic nodes
+vehicles = [bus.Bus(None), car.Car(None)]
 
-for v in vehicles:
-    v.update()
+def __main__():
+    """Starts the environment"""
+    while True:
+        for v in vehicles:
+            v.update()

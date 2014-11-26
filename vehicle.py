@@ -3,7 +3,7 @@
 import uuid
 
 
-class Vehicle:
+class Vehicle(object):
     """Base class for both cars and buses."""
     def __init__(self, args):
         user_id = uuid.uuid4()  # will be replaced by local MAC address

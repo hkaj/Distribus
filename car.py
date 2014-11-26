@@ -4,10 +4,9 @@ from vehicle import Vehicle
 
 
 class Car(Vehicle):
-    """Represent a car."""
+    """Represents a car."""
     def __init__(self, arg):
-        super(Vehicle, self).__init__()
-
+        super(Car, self).__init__(arg)
     def receive_route_update(self, msg):
         self.merge_routes(msg['routes'])
 
