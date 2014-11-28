@@ -13,7 +13,6 @@ Basically (on a Linux environment), the steps are:
 - "python configure.py" (assuming python in the PATH)
 - "make"
 - "make install"
-
 - Downloading PyQt
 - Extracting PyQt
 - cd to the new extracted PyQt directory
