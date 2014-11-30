@@ -11,4 +11,4 @@ class Bus(Vehicle):
     def __init__(self, position):
         super(Bus, self).__init__(position)
         self.isBus = True
-	self.img = QImage('./bus.png')
+        self.img = QImage('./bus.png')

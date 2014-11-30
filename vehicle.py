@@ -7,15 +7,15 @@ from PyQt4.QtGui import QImage
 
 class Vehicle(object):
     """Base class for both cars and buses."""
+
     def __init__(self, position):
-        user_id = uuid.uuid4()  # will be replaced by local MAC address
+        """set up globaals"""
+        user_id = uuid.uuid4()
         MAXTTL = 3
         timeout = 2
-        routing_table = {}  # next_node: (TTL, cost)
+        routing_table = list()
         file_table = []
-	self.position = position
-
-	#UI attributes
+	    self.position = position
 
     def update(self):
         """called every clock tick in the system for each element."""
