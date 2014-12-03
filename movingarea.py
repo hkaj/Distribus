@@ -11,16 +11,16 @@ class MovingArea(QtGui.QWidget):
 
     def __init__(self):
         super(MovingArea, self).__init__()
-	self.vehicleList = []
-	self.size
-	self.initUI()
-	self.initVehicleNodes()    
+        self.vehicleList = []
+        self.size
+        self.initUI()
+        self.initVehicleNodes()    
         
     def initUI(self):    
         self.setGeometry(100, 100, 550, 450)
-		self.size = self.size()
-		self.setWindowTitle('Distribus')
-		self.show()
+        self.size = self.size()
+        self.setWindowTitle('Distribus')
+        self.show()
 
     def initVehicleNodes(self):
 	#instantiate vehicles at various random spots
