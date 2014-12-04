@@ -27,24 +27,12 @@ class Vehicle(object):
                     self.routing_table.remove(route)
 
     def send_route_update_message(self, dest, self_routing_table):
-        
-        if self.is_vehicle_reachable(dest):
-            dest.receive_route_update_message(self, self_routing_table)
-            return True
-        else:
-            return False   
+        dest.receive_route_update_message(self, self_routing_table)
+ 
 
     def receive_route_update_message(self, sender, sender_routing_table):
-        if hasattr(self, 'isBus'):
-            bus_entry =list()
-            bus_entry.append(self)
-            bus_entry.append(0)
-            bus_entry.append(3)
-            bus_rt = list()
-            bus_rt.append(bus_entry)
-            sender.routing_table = merge_routing_tables(sender_routing_table, self, bus_rt)
-        else:
-            sender.routing_table = merge_routing_tables(sender_routing_table, self, self.routing_table)
+        
+        sender.routing_table = merge_routing_tables(sender_routing_table, self, self.routing_table)
         print 'sender:  ',sender,' tr: ',sender.routing_table,'\n'
 
 
@@ -65,7 +53,8 @@ class Vehicle(object):
             if vehicle == self:
                 continue
             else:    
-                self.send_route_update_message(vehicle, self.routing_table)
+                if self.is_vehicle_reachable(vehicle):
+                    self.send_route_update_message(vehicle, self.routing_table)
 
 def merge_routing_tables(sender_routing_table, self_vehicle, self_routing_table):
     #don't delete duplicated entries yet
