@@ -30,10 +30,10 @@ class Vehicle(object):
         dest.receive_route_update_message(self, self_routing_table)
  
 
-    def receive_route_update_message(self, sender, sender_routing_table):
+    def receive_route_update_message(self, dest, dest_routing_table):
         
-        sender.routing_table = merge_routing_tables(sender_routing_table, self, self.routing_table)
-        print 'sender:  ',sender,' tr: ',sender.routing_table,'\n'
+        dest.routing_table = merge_routing_tables(dest_routing_table, self, self.routing_table)
+        print 'sender:  ',dest,' tr: ',dest.routing_table,'\n'
 
 
     
