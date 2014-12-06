@@ -9,4 +9,4 @@ class Car(Vehicle):
     """Represents a car."""
     def __init__(self, position):
         super(Car, self).__init__(position)  
-        self.img = QImage('./car.png')
+        self.img = QImage('media/car.png')

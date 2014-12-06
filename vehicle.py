@@ -21,8 +21,12 @@ class Vehicle(object):
 
     def update(self, vehicleList):
         """called every clock tick in the system for each car."""
+        print "\nRouting table of car at:",self.position
         print self.routing_table
+        
+        #update neighbours' routing table
         self.broadcast(vehicleList)
+       
         if not self.isBus:
             for route in self.routing_table:
                 route[2] -= 1
@@ -30,9 +34,17 @@ class Vehicle(object):
                     self.routing_table.remove(route)
 
     def send_route_update_message(self, dest, self_routing_table):
+        """sends local routing table to neighbours"""
+        #if the cost is "infinte" (=5) we consider the route down
+        #this removes loops in the network after a certain amount
+        #of time
+        for route in self.routing_table:
+            if route[1] > 5:
+                self.routing_table.remove(route)
         dest.receive_route_update_message(self, self_routing_table)
 
     def receive_route_update_message(self, sender, sender_routing_table):
+        #buses don't need to update their table
         if not self.isBus:
             self.merge_routing_tables(sender)
 
@@ -54,10 +66,15 @@ class Vehicle(object):
                     self.send_route_update_message(vehicle, self.routing_table)
 
     def merge_routing_tables(self, sender):
+        
+        #we are interested only in the shortest route provided by
+        #the sender
         shortest_route = None
         for remote_route in sender.routing_table:
             if not shortest_route or remote_route[1] < shortest_route[1]:
                 shortest_route = remote_route
+        
+        #if the sender has something useful for us, update local table
         if shortest_route and shortest_route[0].user_id != self.user_id:
             updated = False
             for local_route in self.routing_table:
