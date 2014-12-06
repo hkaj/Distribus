@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import uuid, math, sys
+import uuid
+import math
+import sys
+from copy import deepcopy
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint
 from PyQt4.QtGui import QImage
-from copy import deepcopy
+
 
 class Vehicle(object):
     """Base class for both cars and buses."""
@@ -51,7 +54,7 @@ class Vehicle(object):
     def is_vehicle_reachable(self, other):
         xDiff = self.position.x() - other.position.x()
         yDiff = self.position.y() - other.position.y()
-        dist = math.sqrt( math.pow(xDiff, 2) + math.pow(yDiff, 2))                     
+        dist = math.sqrt(math.pow(xDiff, 2) + math.pow(yDiff, 2))
         if dist < 100:
             return True
         else:
@@ -61,7 +64,7 @@ class Vehicle(object):
         for vehicle in vehicleList:
             if vehicle == self:
                 continue
-            else:    
+            else:
                 if self.is_vehicle_reachable(vehicle):
                     self.send_route_update_message(vehicle, self.routing_table)
 

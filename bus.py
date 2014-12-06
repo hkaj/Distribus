@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
 from vehicle import Vehicle
 from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import QPoint
-from PyQt4.QtGui import QImage
+from PyQt4.QtCore import QPoint, QSize
+from PyQt4.QtGui import QImage, QIcon, QPushButton
+
 
 class Bus(Vehicle):
     """Represents a bus."""
