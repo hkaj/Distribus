@@ -25,10 +25,22 @@ def main():
 	    # the 10 left are bus
             else:
                 vehicleList.append(bus.Bus(QPoint(x,y)))
-
     for v in vehicleList:
         v.update(vehicleList)
 
+def test_routing():
+    vehicleList = [car.Car(QPoint(0, 0)), car.Car(QPoint(0, 99)), bus.Bus(QPoint(198, 0)), car.Car(QPoint(99, 0)), car.Car(QPoint(99, 99)), car.Car(QPoint(198, 99))]
+    round = 0   
+    while 1:
+        print "============================================================="
+        print "ROUND", round, "\n\n"
+        round = round + 1
+        for v in vehicleList:
+            v.update(vehicleList)
+        if round == 5:
+            del vehicleList[2]
+        sys.stdin.readline()
 
 if __name__ == '__main__':
-	main()
+	test_routing()
+    
