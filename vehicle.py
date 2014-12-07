@@ -4,10 +4,12 @@ import uuid
 import math
 import sys
 from copy import deepcopy
+
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint
 from PyQt4.QtGui import QImage
 
+import globalvars
 
 class Vehicle(object):
     """Base class for both cars and buses."""
@@ -15,8 +17,6 @@ class Vehicle(object):
     def __init__(self, position):
         """set up globals"""
         self.user_id = uuid.uuid4()
-        self.MAXTTL = 2
-        self.timeout = 2
         self.routing_table = [] # list of list(node, cost, ttl)
         self.file_table = []
         self.position = position
@@ -55,7 +55,7 @@ class Vehicle(object):
         xDiff = self.position.x() - other.position.x()
         yDiff = self.position.y() - other.position.y()
         dist = math.sqrt(math.pow(xDiff, 2) + math.pow(yDiff, 2))
-        if dist < 100:
+        if dist < globalvars.msg_distance:
             return True
         else:
             return False
@@ -83,7 +83,7 @@ class Vehicle(object):
             for local_route in self.routing_table:
                 if local_route[0].user_id == sender.user_id:
                     local_route[1] = shortest_route[1] + 1
-                    local_route[2] = self.MAXTTL
+                    local_route[2] = globalvars.max_ttl
                     updated = True
             if not updated:
-                self.routing_table.append([sender, shortest_route[1] + 1, self.MAXTTL])
+                self.routing_table.append([sender, shortest_route[1] + 1, globalvars.max_ttl])
