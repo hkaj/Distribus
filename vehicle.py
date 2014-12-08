@@ -15,21 +15,19 @@ class Vehicle(object):
     """Base class for both cars and buses."""
 
     def __init__(self, position):
-        """set up globals"""
         self.user_id = uuid.uuid4()
-        self.routing_table = [] # list of list(node, cost, ttl)
+        self.routing_table = [] #array of arrays [next_hop, number_hops_to_bus, ttl]
         self.file_table = []
         self.position = position
         self.isBus = False
 
     def update(self, vehicleList):
-        """called every clock tick in the system for each car."""
-        print "\nRouting table of car at:",self.position
+        """called every clock tick in the system for each vehicle."""
+        print '\nRouting table of vehicle at:', self.position
         print self.routing_table
-        
         #update neighbours' routing table
         self.broadcast(vehicleList)
-       
+        #decrease TTL of the route
         if not self.isBus:
             for route in self.routing_table:
                 route[2] -= 1
@@ -69,21 +67,25 @@ class Vehicle(object):
                     self.send_route_update_message(vehicle, self.routing_table)
 
     def merge_routing_tables(self, sender):
-        
-        #we are interested only in the shortest route provided by
-        #the sender
-        shortest_route = None
-        for remote_route in sender.routing_table:
-            if not shortest_route or remote_route[1] < shortest_route[1]:
-                shortest_route = remote_route
-        
-        #if the sender has something useful for us, update local table
+        """updates local routing table from information in the sender's routing table"""
+        shortest_route = sender.get_shortest_route()
+        #sender has some route to share and the route doesn't crosses us
         if shortest_route and shortest_route[0].user_id != self.user_id:
             updated = False
+            #update the local route if exists
             for local_route in self.routing_table:
                 if local_route[0].user_id == sender.user_id:
                     local_route[1] = shortest_route[1] + 1
                     local_route[2] = globalvars.max_ttl
                     updated = True
+            #or add it if necessary
             if not updated:
                 self.routing_table.append([sender, shortest_route[1] + 1, globalvars.max_ttl])
+
+    def get_shortest_route(self):
+        """get shortest route to a bus in the routing table"""
+        shortest_route = None
+        for route in self.routing_table:
+            if not shortest_route or shortest_route[1] > route[1]:
+                shortest_route = route
+        return shortest_route

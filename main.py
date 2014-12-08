@@ -2,6 +2,8 @@
 # -*- encoding: utf-8 -*-
 
 import vehicle
+
+
 import car
 import bus
 import movingarea
@@ -67,6 +69,7 @@ def test_routing():
         sys.stdin.readline()#press enter for each tick
 
 if __name__ == '__main__':
-	test_routing()
-    
+    test_routing()
+
+
 
