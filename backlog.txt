@@ -1,0 +1,6 @@
+
+#TODO
+
+- is TTL needed after all ?
+- handle file fragmentation
+- implement delay in file request and response so that files don't get asked and received in one clock tick

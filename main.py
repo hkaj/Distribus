@@ -55,21 +55,47 @@ def test_routing():
     
     """
     vehicleList = [car.Car(QPoint(0, 0)), car.Car(QPoint(0, 99)), bus.Bus(QPoint(198, 0)), car.Car(QPoint(99, 0)), car.Car(QPoint(99, 99)), car.Car(QPoint(198, 99))]
-    round = 0   
+    round = 0
     while 1:
         print "============================================================="
         print "ROUND", round
         round = round + 1
         for v in vehicleList:
             v.update(vehicleList)
+            v.print_debug_info()
         if round == 5:
             del vehicleList[2]
         if round == 20:
             vehicleList.append(bus.Bus(QPoint(198, 0)))
         sys.stdin.readline()#press enter for each tick
 
+def test_file_transfer():
+    """
+    Our network looks like this
+
+    CAR----CAR-----CAR
+     |      |       |
+     |      |       |
+    CAR----CAR-----BUS
+
+    We ask for "bus_timetable.pdf" to check if small file transfer (no fragment) works
+
+    """
+    vehicleList = [car.Car(QPoint(0, 0)), car.Car(QPoint(0, 99)), bus.Bus(QPoint(198, 0)), car.Car(QPoint(99, 0)), car.Car(QPoint(99, 99)), car.Car(QPoint(198, 99))]
+    round = 0
+    while 1:
+        print "============================================================="
+        print "ROUND", round
+        round = round + 1
+        for v in vehicleList:
+            v.update(vehicleList)
+            v.print_debug_info()
+        if round == 5:
+            vehicleList[0].require_file("bus_timetable.pdf")
+        sys.stdin.readline()#press enter for each tick
+
 if __name__ == '__main__':
-    test_routing()
+    test_file_transfer()
 
 
 
