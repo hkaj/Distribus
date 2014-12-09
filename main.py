@@ -89,9 +89,12 @@ def test_file_transfer():
         round = round + 1
         for v in vehicleList:
             v.update(vehicleList)
-            v.print_debug_info()
         if round == 5:
             vehicleList[0].require_file("bus_timetable.pdf")
+        if round == 20:
+            del vehicleList[2]
+        if round == 21:
+            vehicleList[1].require_file("bus_timetable.pdf")
         sys.stdin.readline()#press enter for each tick
 
 if __name__ == '__main__':
