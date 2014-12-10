@@ -13,7 +13,7 @@ msg_timeout = 5
 msg_distance = 100
 
 #maximum size of a packet before fragmenting
-MTU = 50
+MTU = 5
 
 #file table: dict of dicts (key is filename)
 file_table = {

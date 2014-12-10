@@ -91,9 +91,9 @@ def test_file_transfer():
             v.update(vehicleList)
         if round == 5:
             vehicleList[0].require_file("bus_timetable.pdf")
-        if round == 20:
+        if round == 40:
             del vehicleList[2]
-        if round == 21:
+        if round == 41:
             vehicleList[1].require_file("bus_timetable.pdf")
         sys.stdin.readline()#press enter for each tick
 

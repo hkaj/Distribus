@@ -79,7 +79,7 @@ class Vehicle(object):
         if not self.isBus:
             self.merge_routing_tables(sender)
 
-    def require_file(self, filename):
+    def require_file(self, filename, frag_data=[None, [], ""]):
         """tries to retrieve a file from given filename"""
         #can we connect to a bus ?
         shortest_route = self.get_shortest_route()
@@ -87,11 +87,20 @@ class Vehicle(object):
             print self, "No bus is reachable, aborting download"
             return
         #setup file query protocol
-        hop_list = [self,]
-        frag_data = []
-        shortest_route[0].push_msg_fifo("file_request", [filename, hop_list, frag_data])
         self.timeouts[filename] = globalvars.msg_timeout
+        hop_list = [self,]
+        #frag_data is structured like this
+        #frag_data[0] binary fragment data
+        #frag_data[1] list of fragments already received, e.g. [1, 2, 3]
+        #frag_data[2] information message, written by the server for the client can be "MORE_FRAGS" of more fragments
+        #are expected, or "EOF" if this is the last fragment
+        shortest_route[0].push_msg_fifo("file_request", [filename, hop_list, frag_data])
         print self, "File requested:", filename
+
+    def heuristic_choose(self, num_fragments, frag_data):
+        for i in range(1, num_fragments + 1):
+            if i not in frag_data[1]:
+                return i
 
     def receive_file_request(self, filename, hop_list, frag_data):
         """routes a file request through the network"""
@@ -102,8 +111,18 @@ class Vehicle(object):
             print self, "Received request for", filename
             #can we send the whole file at once ?
             if globalvars.file_table[filename]["size"] < globalvars.MTU:
-                frag_data.append(globalvars.file_table[filename]["data"])
-                hop_list[-1].push_msg_fifo("file_response", [filename, hop_list, frag_data])
+                frag_data[0] = filename
+                frag_data[2] = "EOF"
+            else:
+                num_fragments = globalvars.file_table[filename]["size"] / globalvars.MTU + 1
+                frag_to_send = self.heuristic_choose(num_fragments, frag_data)
+                frag_data[1].append(frag_to_send)
+                if len(frag_data[1]) == num_fragments:
+                    frag_data[2] = "EOF"
+                else:
+                    frag_data[2] = "MORE_FRAGS"
+                frag_data[0] = filename + "_frag_" + str(frag_to_send)
+            hop_list[-1].push_msg_fifo("file_response", [filename, hop_list, frag_data])
         else:
             shortest_route = self.get_shortest_route()
             if not shortest_route:
@@ -124,10 +143,14 @@ class Vehicle(object):
     def handle_file_received(self, filename, frag_data):
         """handles data received from a file request"""
         print self, "File data received:", filename
+        print frag_data
         del self.timeouts[filename]
         #data was sent in one message
-        if len(frag_data) == 1:
-            self.file_table[filename] = frag_data[0]
+        if frag_data[2] == "EOF":
+            self.file_table[filename] = globalvars.file_table[filename]["data"]
+            print self.file_table
+        elif frag_data[2] == "MORE_FRAGS":
+            self.require_file(filename, frag_data)
 
     def is_vehicle_reachable(self, other):
         xDiff = self.position.x() - other.position.x()

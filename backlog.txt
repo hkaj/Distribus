@@ -2,7 +2,6 @@
 #TODO
 
 - is TTL needed after all ?
-- handle file fragmentation
 - implement certificates
 - integrate with UI
 
