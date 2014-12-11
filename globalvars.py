@@ -19,4 +19,8 @@ MTU = 5
 file_table = {
     "bus_timetable.pdf": {"size": 45,
                           "data": "Bus times in the beautiful city of Compiègne, Picardie, France."},
+    "weather.txt": {"size": 2,
+                    "data": "20C, partly cloudy"},
+    "really_big_archive.zip": {"size": 450,
+                               "data": "aWYgeW91IHJlYWQgdGhpcyB5b3UncmUgYSBnZWVrCg=="},
 }

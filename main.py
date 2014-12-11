@@ -14,7 +14,6 @@ import random
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint
 
-
 def main():
     vehicleList = []
     app = QtGui.QApplication(sys.argv)
@@ -78,7 +77,7 @@ def test_file_transfer():
      |      |       |
     CAR----CAR-----BUS
 
-    We ask for "bus_timetable.pdf" to check if small file transfer (no fragment) works
+    We ask for "bus_timetable.pdf" to check if  file transfer works
 
     """
     vehicleList = [car.Car(QPoint(0, 0)), car.Car(QPoint(0, 99)), bus.Bus(QPoint(198, 0)), car.Car(QPoint(99, 0)), car.Car(QPoint(99, 99)), car.Car(QPoint(198, 99))]
@@ -90,12 +89,12 @@ def test_file_transfer():
         for v in vehicleList:
             v.update(vehicleList)
         if round == 5:
-            vehicleList[0].require_file("bus_timetable.pdf")
-        if round == 40:
-            del vehicleList[2]
-        if round == 41:
-            vehicleList[1].require_file("bus_timetable.pdf")
-        sys.stdin.readline()#press enter for each tick
+            vehicleList[0].require_file("bus_timetable.pdf") #ask for a file
+        if round == 10:
+            del vehicleList[2]                               #whoops, looks like the bus is gone
+        if round == 20:
+            vehicleList.append(bus.Bus(QPoint(198, 0)))      #bus is back again
+        sys.stdin.readline()                                 #press enter for each tick
 
 if __name__ == '__main__':
     test_file_transfer()
