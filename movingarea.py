@@ -1,15 +1,16 @@
-import bus
-import car
-import vehicle
-import guivehicle
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 
 import math
 import random
 import sys
 import time
+
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint, QSize, SIGNAL, SLOT
 from PyQt4.QtGui import QImage, QIcon, QPushButton
+
+from vehicle import bus, car, guivehicle, vehicle
 
 
 class MovingArea(QtGui.QWidget):
@@ -18,11 +19,10 @@ class MovingArea(QtGui.QWidget):
         self.vehicleList = vehicleList
         self.vehicleImg = []
         self.size
-        self.initVehicleNodes()    
+        self.initVehicleNodes()
         self.initUI()
 
-        
-    def initUI(self):    
+    def initUI(self):
         self.setGeometry(100, 100, 550, 450)
         self.size = self.size()
         self.setWindowTitle('Distribus')
@@ -48,11 +48,11 @@ class MovingArea(QtGui.QWidget):
         qp.end()
 
     def drawNetwork(self, qp):
-    #for each vehicle
+        # for each vehicle
         for j in range(30):
-        #we check others vehicles
+            # we check others vehicles
             for k in range(30):
-        #if we are testing the current vehicle
+                # if we are testing the current vehicle
                 if j == k:
                     continue
                 # if we are testing an other vehicle
@@ -87,23 +87,20 @@ class MovingArea(QtGui.QWidget):
                 if self.vehicleList[j].position.y() != 25:
                     self.vehicleList[j].position.setY(self.vehicleList[j].position.y() - 1)
 
-            
-            pos = QPoint(self.vehicleList[j].position.x() - (self.vehicleImg[j].size().width()/2), 
+            pos = QPoint(self.vehicleList[j].position.x() - (self.vehicleImg[j].size().width()/2),
                          self.vehicleList[j].position.y() - (self.vehicleImg[j].size().height()/2))
             self.vehicleImg[j].move(pos.x(), pos.y())
 
-            
         time.sleep(0.001)
-        #calling paintEvent 
+        # calling paintEvent
         self.update()
 
     def handleButton(self):
-        #we search the object from the selected icon
+        # we search the object from the selected icon
         for i in range(len(self.vehicleImg)):
             if self.vehicleImg[i] == self.sender():
                 index = i
                 break
 
-        global newguivehicle 
+        global newguivehicle
         newguivehicle = guivehicle.GuiVehicle(self.vehicleList[index])
-        

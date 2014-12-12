@@ -1,7 +1,7 @@
-from vehicle import Vehicle
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint, QSize
 from PyQt4.QtGui import QImage, QIcon, QPushButton
+from vehicle.vehicle import Vehicle
 
 
 class Bus(Vehicle):
