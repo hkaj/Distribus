@@ -3,12 +3,12 @@
 from vehicle import Vehicle
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint, QSize
-from PyQt4.QtGui import QImage, QIcon, QPushButton
+from PyQt4.QtGui import QImage, QIcon, QPushButton, QPixmap
 
 
 class Car(Vehicle):
     """Represents a car."""
     def __init__(self, position):
         super(Car, self).__init__(position)  
-        self.img = QImage('media/car.png')
-        #self.img.size = QSize(32,32)
+        self.img = QIcon(QPixmap('./media/car.png'))
+        self.img.size = QSize(50,50)

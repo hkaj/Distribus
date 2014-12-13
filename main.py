@@ -8,7 +8,7 @@ import car
 import bus
 import movingarea
 
-import threading 
+import threading
 import sys
 import random
 from PyQt4 import QtGui, QtCore
@@ -31,15 +31,12 @@ def main():
 
     map = movingarea.MovingArea(vehicleList)
 
-    a = threading.Thread(None, loop, "infinite loop", vehicleList, None) 
-    a.start()   
+    #a = threading.Thread(target=loop, args=(vehicleList,)) 
+    #a.start()
     
     sys.exit(app.exec_())
 
-def loop(vehicleList):
-    while 1:
-        for v in vehicleList:
-            v.update(vehicleList)
+
 
 def test_routing():
     """
@@ -98,7 +95,7 @@ def test_file_transfer():
         sys.stdin.readline()#press enter for each tick
 
 if __name__ == '__main__':
-    test_file_transfer()
+    main()
 
 
 
