@@ -86,11 +86,17 @@ def test_file_transfer():
         for v in vehicleList:
             v.update(vehicleList)
         if round == 5:
-            vehicleList[0].require_file("bus_timetable.pdf")  # ask for a file
+            #vehicleList[0].require_file("bus_timetable.pdf")  # ask for a file
+            vehicleList[0].require_file("really_big_archive.zip")
         if round == 10:
             del vehicleList[2]                               # whoops, looks like the bus is gone
         if round == 20:
             vehicleList.append(bus.Bus(QPoint(198, 0)))      # bus is back again
+        #if round == 50:
+        #    vehicleList[0].require_file("bus_timetable.pdf")
+        if round == 250:
+            vehicleList[0].require_file("bus_timetable.pdf")
+
         sys.stdin.readline()                                 # press enter for each tick
 
 if __name__ == '__main__':

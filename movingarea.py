@@ -7,6 +7,7 @@ import threading
 import sys
 import time
 
+import globalvars
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint, QSize, SIGNAL, SLOT
 from PyQt4.QtGui import QImage, QIcon, QPushButton
@@ -22,7 +23,7 @@ class MovingArea(QtGui.QWidget):
         self.size
         self.initVehicleNodes() 
         self.worker = threading.Thread(target=self.loop, args=(vehicleList,))
-        #self.worker.start()
+        self.worker.start()
         self.initUI()
 
         
@@ -34,9 +35,12 @@ class MovingArea(QtGui.QWidget):
         self.show()
 
     def initVehicleNodes(self):
+        QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
         for j in range(len(self.vehicleList)):
             self.vehicleImg.append(QPushButton(self))
             self.vehicleImg[j].setIcon(self.vehicleList[j].img)
+            self.vehicleImg[j].setToolTip(str(self.vehicleList[j].user_id))
+            self.vehicleImg[j].resize(self.vehicleImg[j].sizeHint())
             self.vehicleImg[j].setCheckable(True)
             self.vehicleImg[j].setFixedWidth(36)
             self.vehicleImg[j].setFixedHeight(36)
@@ -76,7 +80,7 @@ class MovingArea(QtGui.QWidget):
                     xDiff = self.vehicleList[k].position.x() - self.vehicleList[j].position.x()
                     yDiff = self.vehicleList[k].position.y() - self.vehicleList[j].position.y()
                     dist = math.sqrt(math.pow(xDiff, 2) + math.pow(yDiff, 2))
-                    if dist < 70:
+                    if dist < globalvars.msg_distance:
                         # creating a connection between the 2 vehicles
                         qp.drawLine(
                             self.vehicleList[j].position.x(),
@@ -134,7 +138,8 @@ class MovingArea(QtGui.QWidget):
             self.sender().setText('Pause')
         
     def loop(self,vehicleList):
-        for v in vehicleList:
-            v.update(vehicleList)
+        while 1:
+            for v in vehicleList:
+                v.update(vehicleList)
         sys.exit()
 

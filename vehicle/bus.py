@@ -11,4 +11,4 @@ class Bus(Vehicle):
         super(Bus, self).__init__(position)
         self.isBus = True
         self.routing_table = [[self, 0, 3]]
-        self.img = QIcon(QPixmap('media/bus.png'))
+        self.img = QIcon(QPixmap('media/bus.png')) #quote this line if testing the NON gui version
