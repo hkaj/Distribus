@@ -1,7 +1,8 @@
-from vehicle import Vehicle
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint, QSize
 from PyQt4.QtGui import QImage, QIcon, QPushButton, QPixmap
+from vehicle import Vehicle
+
 
 
 class Bus(Vehicle):
@@ -10,4 +11,4 @@ class Bus(Vehicle):
         super(Bus, self).__init__(position)
         self.isBus = True
         self.routing_table = [[self, 0, 3]]
-        self.img = QIcon(QPixmap('./media/bus.png'))
+        self.img = QIcon(QPixmap('media/bus.png'))

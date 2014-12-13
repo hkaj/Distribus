@@ -1,16 +1,16 @@
-import bus
-import car
-import vehicle
-import guivehicle
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 
 import math
 import random
 import threading 
 import sys
 import time
+
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QPoint, QSize, SIGNAL, SLOT
-from PyQt4.QtGui import QImage, QIcon, QVBoxLayout, QPushButton
+from PyQt4.QtGui import QImage, QIcon, QPushButton
+from vehicle import bus, car, guivehicle, vehicle
 
 class MovingArea(QtGui.QWidget):
 
@@ -62,11 +62,12 @@ class MovingArea(QtGui.QWidget):
         qp.end()
 
     def drawNetwork(self, qp):
+
     #for each vehicle
         for j in range(len(self.vehicleList)):
         #we check others vehicles
             for k in range(len(self.vehicleList)):
-        #if we are testing the current vehicle
+                #if we are testing the current vehicle
                 if j == k:
                     continue
                 # if we are testing an other vehicle
@@ -107,18 +108,19 @@ class MovingArea(QtGui.QWidget):
                              self.vehicleList[j].position.y() - (self.vehicleImg[j].size().height()/2))
                 self.vehicleImg[j].move(pos.x(), pos.y())
 
-            
+
         time.sleep(0.001)
+        # calling paintEvent
         self.update()
 
     def handleButton(self):
-        #we search the object from the selected icon
+        # we search the object from the selected icon
         for i in range(len(self.vehicleImg)):
             if self.vehicleImg[i] == self.sender():
                 index = i
                 break
 
-        global newguivehicle 
+        global newguivehicle
         newguivehicle = guivehicle.GuiVehicle(self.vehicleList[index])
 
     def closeEvent(self, event):
@@ -135,3 +137,4 @@ class MovingArea(QtGui.QWidget):
         for v in vehicleList:
             v.update(vehicleList)
         sys.exit()
+

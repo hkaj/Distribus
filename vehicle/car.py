@@ -10,5 +10,5 @@ class Car(Vehicle):
     """Represents a car."""
     def __init__(self, position):
         super(Car, self).__init__(position)  
-        self.img = QIcon(QPixmap('./media/car.png'))
-        self.img.size = QSize(50,50)
+        self.img = QIcon(QPixmap('media/car.png'))
+

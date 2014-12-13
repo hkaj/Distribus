@@ -1,14 +1,14 @@
+
 import vehicle
 import bus
 import car
 import globalvars
-
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class GuiVehicle(QtGui.QWidget):
-    
+
     def __init__(self, vehicle):
         super(GuiVehicle, self).__init__()
         self.vehicle = vehicle
@@ -35,7 +35,6 @@ class GuiVehicle(QtGui.QWidget):
             self.dlButtonList.append(QPushButton("Download", index))
             index.setCellWidget(j,1, self.dlButtonList[j])
             self.progressList.append(QProgressBar(index))
-            #self.progressList[j].text =
             index.setCellWidget(j,2, self.progressList[j])
         vehicleImg = QLabel()
         vehicleImg.setPixmap(vehicle.img.pixmap(QSize(36,36)))
