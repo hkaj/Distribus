@@ -131,7 +131,7 @@ class Vehicle(object):
                 frag_data[0] = filename
                 frag_data[2] = "EOF"
             else:
-                num_fragments = globalvars.file_table[filename]["size"] / globalvars.MTU + 1
+                num_fragments = int(math.ceil( float(globalvars.file_table[filename]["size"]) / globalvars.MTU))
                 frag_to_send = self.heuristic_choose(num_fragments, frag_data)
                 frag_data[1].append(frag_to_send)
                 # is this the last fragment ?
@@ -170,6 +170,18 @@ class Vehicle(object):
         # more fragments are needed...
         elif frag_data[2] == "MORE_FRAGS":
             self.require_file(filename, frag_data)
+
+    def get_percentage(self, filename):
+        """Gets the percentage of the file already downloaded"""
+        # file is partly downloaded
+        if filename in self.timeouts and self.timeouts[filename][1]:
+            return len(self.timeouts[filename][1][1]) / \
+                   ( math.ceil( float(globalvars.file_table[filename]["size"]) / globalvars.MTU )) * 100
+        # file is completely downloaded
+        if filename in self.file_table:
+            return 100
+        # file download hasn't started yet
+        return 0
 
     def is_vehicle_reachable(self, other):
         xDiff = self.position.x() - other.position.x()
