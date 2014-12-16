@@ -82,12 +82,16 @@ class Vehicle(object):
         if not self.isBus:
             self.merge_routing_tables(sender)
 
-    def require_file(self, filename, frag_data=[None, [], ""]):
+    def require_file(self, filename, frag_data=None):
         """
         Tries to retrieve a file from given filename.
         May be called multiple times in case of timeouts or fragmentation
 
         """
+        # check if we actually need to download the file
+        if filename in self.file_table:
+            print "Already downloaded, aborting..."
+            return
         # set a timeout for trying again if anything goes wrong
         self.timeouts[filename] = [globalvars.msg_timeout, frag_data]
         # is a bus reachable ?
@@ -119,6 +123,9 @@ class Vehicle(object):
                 print self, "Received request for", filename, "which doesn't exist!"
                 return
             print self, "Received request for", filename
+            # if it's the first request, initialize a new frag_data structure
+            if not frag_data:
+                frag_data = [None, [], None]
             # can we send the whole file at once ?
             if globalvars.file_table[filename]["size"] < globalvars.MTU:
                 frag_data[0] = filename

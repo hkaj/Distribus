@@ -96,7 +96,6 @@ def test_file_transfer():
         #    vehicleList[0].require_file("bus_timetable.pdf")
         if round == 250:
             vehicleList[0].require_file("bus_timetable.pdf")
-
         sys.stdin.readline()                                 # press enter for each tick
 
 if __name__ == '__main__':
