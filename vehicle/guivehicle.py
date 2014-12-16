@@ -19,7 +19,7 @@ class GuiVehicle(QtGui.QWidget):
         # routing table [Next hop, Jump nb to reach a bus, TTL]
         table = QTableWidget(len(vehicle.routing_table),3)
         table.setColumnWidth(0, 290)
-        table.setHorizontalHeaderLabels ( ("Next hop", "Nb.", "TTL"))
+        table.setHorizontalHeaderLabels ( ("Next hop", "Cost", "TTL"))
         table.setColumnWidth(1, 40)
         table.setColumnWidth(2, 40)
 
@@ -67,6 +67,18 @@ class GuiVehicle(QtGui.QWidget):
         self.setWindowTitle('Vehicule')
         self.show()
 
+    def paintEvent(self, e):
+        qp = QtGui.QPainter()
+        qp.begin(self)
+        self.refreshPercentage(qp)
+        qp.end()
+
+    def refreshPercentage(self, qp):
+        for i in xrange(len(globalvars.file_table)):
+            filename = str(self.index.cellWidget(i, 0).text())
+            self.progressList[i].setValue(self.vehicle.get_percentage(filename))
+        self.update()
+
     def dlFile(self):
 
         # finding the sender of the signal
@@ -76,8 +88,6 @@ class GuiVehicle(QtGui.QWidget):
                 break
 
         filename = str(self.index.cellWidget(ind, 0).text())
-
         # send the file request
         self.vehicle.require_file(filename)
-        self.progressList[ind].setValue(100)
-
+        

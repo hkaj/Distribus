@@ -13,6 +13,8 @@ from PyQt4.QtCore import QPoint, QSize, SIGNAL, SLOT
 from PyQt4.QtGui import QImage, QIcon, QPushButton
 from vehicle import bus, car, guivehicle, vehicle
 
+stop_event = threading.Event()
+
 class MovingArea(QtGui.QWidget):
 
     def __init__(self, vehicleList):
@@ -21,8 +23,8 @@ class MovingArea(QtGui.QWidget):
         self.vehicleList = vehicleList
         self.vehicleImg = []
         self.size
-        self.initVehicleNodes() 
-        self.worker = threading.Thread(target=self.loop, args=(vehicleList,))
+        self.initVehicleNodes()
+        self.worker = threading.Thread(target=self.loop, args=(vehicleList,stop_event))
         self.worker.start()
         self.initUI()
 
@@ -128,6 +130,8 @@ class MovingArea(QtGui.QWidget):
         newguivehicle = guivehicle.GuiVehicle(self.vehicleList[index])
 
     def closeEvent(self, event):
+        stop_event.set()
+        self.worker.join()
         event.accept() 
 
     def handlePause(self):
@@ -137,9 +141,8 @@ class MovingArea(QtGui.QWidget):
         else:
             self.sender().setText('Pause')
         
-    def loop(self,vehicleList):
-        while 1:
+    def loop(self,vehicleList, stop_event):
+        while (not stop_event.is_set()):
             for v in vehicleList:
                 v.update(vehicleList)
-        sys.exit()
 
