@@ -17,17 +17,17 @@ class GuiVehicle(QtGui.QWidget):
         layout = QGridLayout(self)
 
         # routing table [Next hop, Jump nb to reach a bus, TTL]
-        table = QTableWidget(len(vehicle.routing_table),3)
-        table.setColumnWidth(0, 290)
-        table.setHorizontalHeaderLabels ( ("Next hop", "Cost", "TTL"))
-        table.setColumnWidth(1, 40)
-        table.setColumnWidth(2, 40)
+        self.table = QTableWidget(len(vehicle.routing_table),3)
+        self.table.setColumnWidth(0, 290)
+        self.table.setHorizontalHeaderLabels ( ("Next hop", "Cost", "TTL"))
+        self.table.setColumnWidth(1, 40)
+        self.table.setColumnWidth(2, 40)
 
         # filling (gui) table
         for i in xrange(len(vehicle.routing_table)):
-            table.setCellWidget(i,0,QLabel(str(vehicle.routing_table[i][0].user_id)))
-            table.setCellWidget(i,1,QLabel(str(vehicle.routing_table[i][1])))
-            table.setCellWidget(i,2,QLabel(str(vehicle.routing_table[i][2])))
+            self.table.setCellWidget(i,0,QLabel(str(vehicle.routing_table[i][0].user_id)))
+            self.table.setCellWidget(i,1,QLabel(str(vehicle.routing_table[i][1])))
+            self.table.setCellWidget(i,2,QLabel(str(vehicle.routing_table[i][2])))
 
         # index of files
         self.index = QTableWidget(len(globalvars.file_table),3)
@@ -41,10 +41,13 @@ class GuiVehicle(QtGui.QWidget):
             self.index.setCellWidget(j,0,QLabel(file))
             self.dlButtonList.append(QPushButton("Download", self.index))
             self.dlButtonList[j].clicked.connect(self.dlFile)
-            self.dlButtonList[j].setCheckable(True)
+            if self.vehicle.isBus:
+                self.dlButtonList[j].setEnabled(False)
+            else:
+                self.dlButtonList[j].setEnabled(True)       
             self.index.setCellWidget(j,1, self.dlButtonList[j])
             self.progressList.append(QProgressBar(self.index))
-            if self.vehicle.file_table.has_key(file):
+            if self.vehicle.file_table.has_key(file) or self.vehicle.isBus:
                 self.progressList[j].setValue(100)
             self.index.setCellWidget(j,2, self.progressList[j])
 
@@ -56,7 +59,7 @@ class GuiVehicle(QtGui.QWidget):
 
         # write the id of the select vehicle
         layout.addWidget(QLabel(str(vehicle.user_id)), 1,1)
-        layout.addWidget(table,2,0)
+        layout.addWidget(self.table,2,0)
         layout.addWidget(self.index,2,1)
         self.setLayout(layout)
         self.initUI()
@@ -70,13 +73,22 @@ class GuiVehicle(QtGui.QWidget):
     def paintEvent(self, e):
         qp = QtGui.QPainter()
         qp.begin(self)
-        self.refreshPercentage(qp)
+        self.refreshView(qp)
         qp.end()
 
-    def refreshPercentage(self, qp):
-        for i in xrange(len(globalvars.file_table)):
-            filename = str(self.index.cellWidget(i, 0).text())
-            self.progressList[i].setValue(self.vehicle.get_percentage(filename))
+    def refreshView(self, qp):
+        self.table.setRowCount(0)
+        rout_tab_len = len(self.vehicle.routing_table)
+        self.table.setRowCount(rout_tab_len)
+        for i in xrange(rout_tab_len):
+            self.table.setCellWidget(i,0,QLabel(str(self.vehicle.routing_table[i][0].user_id)))
+            self.table.setCellWidget(i,1,QLabel(str(self.vehicle.routing_table[i][1])))
+            self.table.setCellWidget(i,2,QLabel(str(self.vehicle.routing_table[i][2])))
+
+        for j in xrange(len(globalvars.file_table)):
+            filename = str(self.index.cellWidget(j, 0).text())
+            if not self.vehicle.isBus:
+                self.progressList[j].setValue(self.vehicle.get_percentage(filename))
         self.update()
 
     def dlFile(self):

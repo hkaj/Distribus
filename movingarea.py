@@ -145,4 +145,5 @@ class MovingArea(QtGui.QWidget):
         while (not stop_event.is_set()):
             for v in vehicleList:
                 v.update(vehicleList)
+            time.sleep(1)
 
