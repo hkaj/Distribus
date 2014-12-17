@@ -58,11 +58,14 @@ class Vehicle(object):
         for route in self.routing_table:
             if route[1] > 5:
                 self.routing_table.remove(route)
-        destination.push_msg_fifo("route_update", [self])
+        self.send_to_vehicle(destination, "route_update", [self])
 
     def push_msg_fifo(self, message_type, args):
         """Adds a message in the FIFO for later processing (emulates network propagation time)"""
         self.msg_fifo.append([message_type, args])
+
+    def send_to_vehicle(self, destination, message_type, message_args):
+        destination.push_msg_fifo(message_type, message_args)
 
     def pop_msg_fifo(self):
         """Process next message in the local fifo"""
@@ -106,7 +109,7 @@ class Vehicle(object):
         # frag_data[1] list of fragments already received, e.g. [1, 2, 3]
         # frag_data[2] information message, written by the server for the client can be "MORE_FRAGS" if more fragments
         # are expected, or "EOF" if this is the last fragment
-        shortest_route[0].push_msg_fifo("file_request", [filename, hop_list, frag_data])
+        self.send_to_vehicle(shortest_route[0], "file_request", [filename, hop_list, frag_data])
         print self, "File requested:", filename
 
     def heuristic_choose(self, num_fragments, frag_data):
@@ -140,20 +143,20 @@ class Vehicle(object):
                 else:
                     frag_data[2] = "MORE_FRAGS"
                 frag_data[0] = filename + "_frag_" + str(frag_to_send)
-            hop_list[-1].push_msg_fifo("file_response", [filename, hop_list, frag_data])
+            self.send_to_vehicle(hop_list[-1], "file_response", [filename, hop_list, frag_data])
         else:
             shortest_route = self.get_shortest_route()
             if not shortest_route:
                 return
             hop_list.append(self)
-            shortest_route[0].push_msg_fifo("file_request", [filename, hop_list, frag_data])
+            self.send_to_vehicle(shortest_route[0], "file_request", [filename, hop_list, frag_data])
 
     def receive_file_response(self, filename, hop_list, frag_data):
         """Routes a file response to the sender"""
         del hop_list[-1]
         # still some routing needed
         if hop_list:
-            hop_list[-1].push_msg_fifo("file_response", [filename, hop_list, frag_data])
+            self.send_to_vehicle(hop_list[-1], "file_response", [filename, hop_list, frag_data])
         # the message is for us !
         else:
             self.handle_file_received(filename, frag_data)
