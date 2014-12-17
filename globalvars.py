@@ -10,7 +10,7 @@ max_ttl = 2
 msg_timeout = 5
 
 # maximum distance between 2 vehicles for a message to be sent
-msg_distance = 80
+msg_distance = 70
 
 # maximum size of a packet before fragmenting
 MTU = 5

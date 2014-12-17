@@ -15,6 +15,7 @@ class GuiVehicle(QtGui.QWidget):
         super(GuiVehicle, self).__init__()
         self.vehicle = vehicle
         layout = QGridLayout(self)
+        layout.setColumnMinimumWidth(0,400)
 
         # routing table [Next hop, Jump nb to reach a bus, TTL]
         self.table = QTableWidget(len(vehicle.routing_table),3)
@@ -77,18 +78,26 @@ class GuiVehicle(QtGui.QWidget):
         qp.end()
 
     def refreshView(self, qp):
+
         self.table.setRowCount(0)
+
         rout_tab_len = len(self.vehicle.routing_table)
         self.table.setRowCount(rout_tab_len)
-        for i in xrange(rout_tab_len):
-            self.table.setCellWidget(i,0,QLabel(str(self.vehicle.routing_table[i][0].user_id)))
-            self.table.setCellWidget(i,1,QLabel(str(self.vehicle.routing_table[i][1])))
-            self.table.setCellWidget(i,2,QLabel(str(self.vehicle.routing_table[i][2])))
+        try:
+            for i in range(rout_tab_len):
+                self.table.setCellWidget(i,0,QLabel(str(self.vehicle.routing_table[i][0].user_id)))
+                self.table.setCellWidget(i,1,QLabel(str(self.vehicle.routing_table[i][1])))
+                self.table.setCellWidget(i,2,QLabel(str(self.vehicle.routing_table[i][2])))
+        except IndexError:
+            pass
 
-        for j in xrange(len(globalvars.file_table)):
+
+
+        for j in range(len(globalvars.file_table)):
             filename = str(self.index.cellWidget(j, 0).text())
             if not self.vehicle.isBus:
                 self.progressList[j].setValue(self.vehicle.get_percentage(filename))
+        time.sleep(0.001)
         self.update()
 
     def dlFile(self):
