@@ -85,7 +85,7 @@ class Vehicle(object):
         if not self.isBus:
             self.merge_routing_tables(sender)
 
-    def require_file(self, filename, frag_data=None):
+    def require_file(self, filename, frag_data=[None, [], []]):
         """
         Tries to retrieve a file from given filename.
         May be called multiple times in case of timeouts or fragmentation
@@ -107,8 +107,8 @@ class Vehicle(object):
         # frag_data is structured like this
         # frag_data[0] binary fragment data (simulated here)
         # frag_data[1] list of fragments already received, e.g. [1, 2, 3]
-        # frag_data[2] information message, written by the server for the client can be "MORE_FRAGS" if more fragments
-        # are expected, or "EOF" if this is the last fragment
+        # frag_data[2] array of information messages, written by the server for the client, can be "MORE_FRAGS" if more fragments expected, "CERTIFICATE" if the message is related to certificates
+        # or "EOF" if this is the last fragment
         self.send_to_vehicle(shortest_route[0], "file_request", [filename, hop_list, frag_data])
         print self, "File requested:", filename
 
@@ -122,31 +122,33 @@ class Vehicle(object):
     def receive_file_request(self, filename, hop_list, frag_data):
         """Routes a file request through the network"""
         if self.isBus:
-            if filename not in globalvars.file_table:
+            if "CERTIFICATE" in frag_data[2]:
+                print self, "Received certificate request for", filename
+                self.handle_certificate_request(filename, hop_list, frag_data)
+            elif filename not in globalvars.file_table:
                 print self, "Received request for", filename, "which doesn't exist!"
                 return
-            print self, "Received request for", filename
-            # if it's the first request, initialize a new frag_data structure
-            if not frag_data:
-                frag_data = [None, [], None]
-            # can we send the whole file at once ?
-            if globalvars.file_table[filename]["size"] < globalvars.MTU:
-                frag_data[0] = filename
-                frag_data[2] = "EOF"
             else:
-                num_fragments = int(math.ceil( float(globalvars.file_table[filename]["size"]) / globalvars.MTU))
-                frag_to_send = self.heuristic_choose(num_fragments, frag_data)
-                frag_data[1].append(frag_to_send)
-                # is this the last fragment ?
-                if len(frag_data[1]) == num_fragments:
-                    frag_data[2] = "EOF"
+                print self, "Received request for", filename
+                # can we send the whole file at once ?
+                if globalvars.file_table[filename]["size"] < globalvars.MTU:
+                    frag_data[0] = filename
+                    frag_data[2] = ["EOF"]
                 else:
-                    frag_data[2] = "MORE_FRAGS"
-                frag_data[0] = filename + "_frag_" + str(frag_to_send)
-            self.send_to_vehicle(hop_list[-1], "file_response", [filename, hop_list, frag_data])
+                    num_fragments = int(math.ceil( float(globalvars.file_table[filename]["size"]) / globalvars.MTU))
+                    frag_to_send = self.heuristic_choose(num_fragments, frag_data)
+                    frag_data[1].append(frag_to_send)
+                    # is this the last fragment ?
+                    if len(frag_data[1]) == num_fragments:
+                        frag_data[2] = ["EOF"]
+                    else:
+                        frag_data[2] = ["MORE_FRAGS"]
+                    frag_data[0] = filename + "_frag_" + str(frag_to_send)
+                self.send_to_vehicle(hop_list[-1], "file_response", [filename, hop_list, frag_data])
         else:
             shortest_route = self.get_shortest_route()
             if not shortest_route:
+                print self, "Dropped message (no route to bus)"
                 return
             hop_list.append(self)
             self.send_to_vehicle(shortest_route[0], "file_request", [filename, hop_list, frag_data])
@@ -167,11 +169,14 @@ class Vehicle(object):
         print frag_data
         del self.timeouts[filename]
         # we have now the full file !
-        if frag_data[2] == "EOF":
-            self.file_table[filename] = globalvars.file_table[filename]["data"]
-            print self.file_table
+        if "EOF" in frag_data[2]:
+            if "CERTIFICATE" in frag_data[2]:
+                self.handle_certificate_response(filename, frag_data)
+            else:
+                self.file_table[filename] = globalvars.file_table[filename]["data"]
+                print self.file_table
         # more fragments are needed...
-        elif frag_data[2] == "MORE_FRAGS":
+        elif "MORE_FRAGS" in frag_data[2]:
             self.require_file(filename, frag_data)
 
     def get_percentage(self, filename):
@@ -227,6 +232,21 @@ class Vehicle(object):
             if not shortest_route or shortest_route[1] > route[1]:
                 shortest_route = route
         return shortest_route
+
+    def require_certificate(self, certificate):
+        """Sends message to get the status of a certificate"""
+        print self, "Certificate verification required for", certificate
+        self.require_file(certificate["name"], [None, [], ["CERTIFICATE"]])
+
+    def handle_certificate_request(self, certificate_name, hop_list, frag_data):
+        # internal routine of certificate checking
+        frag_data[0] = globalvars.certificates[certificate_name]["status"]
+        # normal response sending process
+        frag_data[2].append("EOF")
+        self.send_to_vehicle(hop_list[-1], "file_response", [certificate_name, hop_list, frag_data])
+
+    def handle_certificate_response(self, certificate, frag_data):
+        print self, "Certificate for", certificate, "has state", frag_data[0]
 
     def print_debug_info(self):
         """Prints useful debug information about a Vehicle"""

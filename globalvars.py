@@ -25,3 +25,17 @@ file_table = {
                                "data": "aWYgeW91IHJlYWQgdGhpcyB5b3UncmUgYSBnZWVrCg=="},
 }
 
+certificates = {
+    "la_banque": {"name": "la_banque",
+                  "id": 1,
+                  "public_key": "01234567890123456789",
+                  "status": "VALID"},
+    "la_rnaque": {"name": "la_rnaque",
+                  "id":2,
+                  "public_key": "FFFFFFFFFFFFFFFFFFFF",
+                  "status": "REVOKED"},
+    "la_bstention": {"name": "la_bstention",
+                  "id":3,
+                  "public_key": "00000000000000000000",
+                  "status": "UNKNOWN"},
+}
