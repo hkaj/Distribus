@@ -171,7 +171,8 @@ class Vehicle(object):
         """Handles data received from a file request"""
         print self, "File data received:", filename
         print frag_data
-        del self.timeouts[filename]
+        if filename in self.timeouts:
+            del self.timeouts[filename]
         # we have now the full file !
         if "EOF" in frag_data[2]:
             if "CERTIFICATE" in frag_data[2]:
