@@ -87,12 +87,14 @@ class Vehicle(object):
         if not self.isBus:
             self.merge_routing_tables(sender)
 
-    def require_file(self, filename, frag_data=[None, [], []]):
+    def require_file(self, filename, frag_data=None):
         """
         Tries to retrieve a file from given filename.
         May be called multiple times in case of timeouts or fragmentation
 
         """
+        if not frag_data:
+            frag_data = [None, [], []]
         # check if we actually need to download the file
         if filename in self.file_table:
             print "Already downloaded, aborting..."
