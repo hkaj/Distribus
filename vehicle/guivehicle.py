@@ -31,10 +31,10 @@ class GuiVehicle(QtGui.QWidget):
             self.table.setCellWidget(i,2,QLabel(str(vehicle.routing_table[i][2])))
 
         # index of files
-        self.index = QTableWidget(len(globalvars.file_table),3)
+        self.index = QTableWidget(len(globalvars.file_table) + len(globalvars.certificates),3)
         self.index.setHorizontalHeaderLabels ( ("File", "Dl", "Progress"))
         self.dlButtonList = []
-        self.progressList = [] 
+        self.progressList = []
 
         # filling index table
         for file, value in globalvars.file_table.iteritems():
@@ -45,11 +45,23 @@ class GuiVehicle(QtGui.QWidget):
             if self.vehicle.isBus:
                 self.dlButtonList[j].setEnabled(False)
             else:
-                self.dlButtonList[j].setEnabled(True)       
+                self.dlButtonList[j].setEnabled(True)
             self.index.setCellWidget(j,1, self.dlButtonList[j])
             self.progressList.append(QProgressBar(self.index))
             if self.vehicle.file_table.has_key(file) or self.vehicle.isBus:
                 self.progressList[j].setValue(100)
+            self.index.setCellWidget(j,2, self.progressList[j])
+        for certificate, content in globalvars.certificates.iteritems():
+            j = len(self.dlButtonList)
+            self.index.setCellWidget(j,0,QLabel(certificate))
+            self.dlButtonList.append(QPushButton("Verify", self.index))
+            self.dlButtonList[j].clicked.connect(self.checkCertificate)
+            if self.vehicle.isBus:
+                self.dlButtonList[j].setEnabled(False)
+            else:
+                self.dlButtonList[j].setEnabled(True)
+            self.index.setCellWidget(j,1, self.dlButtonList[j])
+            self.progressList.append(QLabel("  ?"))
             self.index.setCellWidget(j,2, self.progressList[j])
 
         # draw icon of the selected vehicle
@@ -65,7 +77,7 @@ class GuiVehicle(QtGui.QWidget):
         self.setLayout(layout)
         self.initUI()
 
-        
+
     def initUI(self):
         self.setGeometry(300, 100, 800, 400)
         self.setWindowTitle('Vehicule')
@@ -97,6 +109,12 @@ class GuiVehicle(QtGui.QWidget):
             filename = str(self.index.cellWidget(j, 0).text())
             if not self.vehicle.isBus:
                 self.progressList[j].setValue(self.vehicle.get_percentage(filename))
+
+        for j in range(len(globalvars.file_table), len(globalvars.file_table)+len(globalvars.certificates)):
+            certificate = str(self.index.cellWidget(j, 0).text())
+            if not self.vehicle.isBus:
+                self.progressList[j].setText(self.vehicle.get_certificate_status(certificate))
+
         time.sleep(0.001)
         self.update()
 
@@ -111,4 +129,14 @@ class GuiVehicle(QtGui.QWidget):
         filename = str(self.index.cellWidget(ind, 0).text())
         # send the file request
         self.vehicle.require_file(filename)
-        
+
+    def checkCertificate(self):
+        # finding the sender of the signal
+        for i in range(len(self.dlButtonList)):
+            if self.dlButtonList[i] == self.sender():
+                ind = i
+                break
+
+        certificate = str(self.index.cellWidget(ind, 0).text())
+        # send the certificate request
+        self.vehicle.require_certificate(certificate)

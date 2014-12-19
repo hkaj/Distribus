@@ -21,6 +21,8 @@ class Vehicle(object):
         self.routing_table = []
         # dictionnary of downloaded files {"filename": "file_data", ...}
         self.file_table = {}
+        # dictionnary of verified certificates {"certificate_name": "certificate_data", ...}
+        self.certificate_table = {}
         # 2D position on the map
         self.position = position
         self.isBus = False
@@ -236,7 +238,7 @@ class Vehicle(object):
     def require_certificate(self, certificate):
         """Sends message to get the status of a certificate"""
         print self, "Certificate verification required for", certificate
-        self.require_file(certificate["name"], [None, [], ["CERTIFICATE"]])
+        self.require_file(certificate, [None, [], ["CERTIFICATE"]])
 
     def handle_certificate_request(self, certificate_name, hop_list, frag_data):
         # internal routine of certificate checking
@@ -246,7 +248,14 @@ class Vehicle(object):
         self.send_to_vehicle(hop_list[-1], "file_response", [certificate_name, hop_list, frag_data])
 
     def handle_certificate_response(self, certificate, frag_data):
+        self.certificate_table[certificate] = {"status": frag_data[0]}
         print self, "Certificate for", certificate, "has state", frag_data[0]
+
+    def get_certificate_status(self, certificate):
+        if certificate in self.certificate_table:
+            return self.certificate_table[certificate]["status"]
+        else:
+            return "  ?"
 
     def print_debug_info(self):
         """Prints useful debug information about a Vehicle"""
